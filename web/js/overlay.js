@@ -49,7 +49,7 @@ function inputFor(col, value) {
     return el; // options populated async by caller
   }
   const el = document.createElement("input");
-  el.type = col.type === "number" ? "number" : "text";
+  el.type = col.type === "number" ? "number" : col.type === "date" ? "date" : "text";
   el.value = value == null ? "" : value;
   return el;
 }

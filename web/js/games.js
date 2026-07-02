@@ -7,7 +7,7 @@ function gamesConfig(teamsById) {
     title: "Games",
     idKey: "id",
     columns: [
-      { key: "date", label: "Date", type: "text" },
+      { key: "date", label: "Date", type: "date" },
       {
         key: "game_number",
         label: "Gm",

@@ -231,7 +231,11 @@ export function renderEntityTable(container, config) {
         if (col.editableOnCreate === false) {
           td.textContent = "";
         } else {
-          const el = inputFor(col, col.type === "checkbox" ? true : "");
+          let initial = col.type === "checkbox" ? true : "";
+          if (col.defaultValue !== undefined) {
+            initial = typeof col.defaultValue === "function" ? col.defaultValue() : col.defaultValue;
+          }
+          const el = inputFor(col, initial);
           inputs[col.key] = el;
           td.appendChild(el);
           if (col.type === "select") fillSelect(el, col, null);

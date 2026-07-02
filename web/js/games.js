@@ -7,7 +7,12 @@ function gamesConfig(teamsById) {
     title: "Games",
     idKey: "id",
     columns: [
-      { key: "date", label: "Date", type: "date" },
+      {
+        key: "date",
+        label: "Date",
+        type: "date",
+        defaultValue: () => new Date().toLocaleDateString("en-CA"),
+      },
       {
         key: "game_number",
         label: "Gm",

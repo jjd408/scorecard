@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <time.h>
 
 #define DATA_DIR "data"
 #define GAMES_DIR DATA_DIR "/games"
@@ -82,10 +83,83 @@ static void seed_if_missing(const char *path) {
     cJSON_Delete(empty);
 }
 
+typedef struct {
+    const char *name;
+    const char *city;
+} default_team_t;
+
+/* The 30 MLB teams, seeded into teams.json on first run only (§2's
+ * "seeds ... with an empty array if they don't already exist" — this is
+ * the same first-run seed, just with real defaults for teams specifically
+ * instead of []). Existing teams.json files are left untouched. */
+static const default_team_t kDefaultTeams[] = {
+    {"Baltimore Orioles", "Baltimore"},
+    {"Boston Red Sox", "Boston"},
+    {"New York Yankees", "New York"},
+    {"Tampa Bay Rays", "Tampa Bay"},
+    {"Toronto Blue Jays", "Toronto"},
+    {"Chicago White Sox", "Chicago"},
+    {"Cleveland Guardians", "Cleveland"},
+    {"Detroit Tigers", "Detroit"},
+    {"Kansas City Royals", "Kansas City"},
+    {"Minnesota Twins", "Minneapolis"},
+    {"Houston Astros", "Houston"},
+    {"Los Angeles Angels", "Anaheim"},
+    {"Athletics", "Sacramento"},
+    {"Seattle Mariners", "Seattle"},
+    {"Texas Rangers", "Arlington"},
+    {"Atlanta Braves", "Atlanta"},
+    {"Miami Marlins", "Miami"},
+    {"New York Mets", "New York"},
+    {"Philadelphia Phillies", "Philadelphia"},
+    {"Washington Nationals", "Washington"},
+    {"Chicago Cubs", "Chicago"},
+    {"Cincinnati Reds", "Cincinnati"},
+    {"Milwaukee Brewers", "Milwaukee"},
+    {"Pittsburgh Pirates", "Pittsburgh"},
+    {"St. Louis Cardinals", "St. Louis"},
+    {"Arizona Diamondbacks", "Phoenix"},
+    {"Colorado Rockies", "Denver"},
+    {"Los Angeles Dodgers", "Los Angeles"},
+    {"San Diego Padres", "San Diego"},
+    {"San Francisco Giants", "San Francisco"},
+};
+static const size_t kNumDefaultTeams = sizeof(kDefaultTeams) / sizeof(kDefaultTeams[0]);
+
+static void seed_default_teams_if_missing(const char *path) {
+    FILE *f = fopen(path, "rb");
+    if (f) {
+        fclose(f);
+        return;
+    }
+
+    char created_at[32];
+    time_t now = time(NULL);
+    struct tm tm_utc;
+    gmtime_r(&now, &tm_utc);
+    strftime(created_at, sizeof(created_at), "%Y-%m-%dT%H:%M:%SZ", &tm_utc);
+
+    cJSON *teams = cJSON_CreateArray();
+    for (size_t i = 0; i < kNumDefaultTeams; i++) {
+        char id[16];
+        snprintf(id, sizeof(id), "team_%03zu", i + 1);
+
+        cJSON *team = cJSON_CreateObject();
+        cJSON_AddStringToObject(team, "id", id);
+        cJSON_AddStringToObject(team, "name", kDefaultTeams[i].name);
+        cJSON_AddStringToObject(team, "city", kDefaultTeams[i].city);
+        cJSON_AddStringToObject(team, "created_at", created_at);
+        cJSON_AddBoolToObject(team, "active", 1);
+        cJSON_AddItemToArray(teams, team);
+    }
+    storage_write_json_atomic(path, teams);
+    cJSON_Delete(teams);
+}
+
 void storage_init(void) {
     mkdir(DATA_DIR, 0755);
     mkdir(GAMES_DIR, 0755);
-    seed_if_missing(STORAGE_TEAMS_PATH);
+    seed_default_teams_if_missing(STORAGE_TEAMS_PATH);
     seed_if_missing(STORAGE_PLAYERS_PATH);
     seed_if_missing(STORAGE_ANNOTATION_CODES_PATH);
 }

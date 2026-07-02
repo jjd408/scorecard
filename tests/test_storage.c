@@ -38,13 +38,20 @@ static void write_file_raw(const char *path, const char *contents) {
     fclose(f);
 }
 
-static void test_init_creates_dirs_and_seeds_empty_arrays(void) {
+static void test_init_creates_dirs_and_seeds_defaults(void) {
     reset_data_dir();
     storage_init();
 
+    /* teams.json is seeded with the 30 real MLB teams on first run (not an
+     * empty array) — see kDefaultTeams in storage.c. */
     cJSON *teams = storage_list_teams();
     CHECK(cJSON_IsArray(teams));
-    CHECK(cJSON_GetArraySize(teams) == 0);
+    CHECK(cJSON_GetArraySize(teams) == 30);
+    cJSON *first_team = cJSON_GetArrayItem(teams, 0);
+    CHECK(strcmp(cJSON_GetObjectItemCaseSensitive(first_team, "id")->valuestring,
+                  "team_001") == 0);
+    CHECK(strlen(cJSON_GetObjectItemCaseSensitive(first_team, "name")->valuestring) > 0);
+    CHECK(cJSON_IsTrue(cJSON_GetObjectItemCaseSensitive(first_team, "active")));
     cJSON_Delete(teams);
 
     cJSON *players = storage_list_players();
@@ -176,8 +183,10 @@ static void test_next_id_sequencing(void) {
     reset_data_dir();
     storage_init();
 
-    char *first = storage_next_id(STORAGE_TEAMS_PATH, "team");
-    CHECK(strcmp(first, "team_001") == 0);
+    /* players.json (unlike teams.json) is still seeded empty, so this is
+     * the "first id for an empty file" case. */
+    char *first = storage_next_id(STORAGE_PLAYERS_PATH, "player");
+    CHECK(strcmp(first, "player_001") == 0);
     free(first);
 
     cJSON *teams = cJSON_CreateArray();
@@ -287,17 +296,18 @@ static void test_append_to_array(void) {
     reset_data_dir();
     storage_init();
 
+    /* players.json (unlike teams.json) is still seeded empty. */
     cJSON *t1 = cJSON_CreateObject();
-    add_str(t1, "id", "team_001");
-    CHECK(storage_append_to_array(STORAGE_TEAMS_PATH, t1) == 0);
+    add_str(t1, "id", "player_001");
+    CHECK(storage_append_to_array(STORAGE_PLAYERS_PATH, t1) == 0);
     cJSON_Delete(t1);
 
     cJSON *t2 = cJSON_CreateObject();
-    add_str(t2, "id", "team_002");
-    CHECK(storage_append_to_array(STORAGE_TEAMS_PATH, t2) == 0);
+    add_str(t2, "id", "player_002");
+    CHECK(storage_append_to_array(STORAGE_PLAYERS_PATH, t2) == 0);
     cJSON_Delete(t2);
 
-    cJSON *reread = storage_list_teams();
+    cJSON *reread = storage_list_players();
     CHECK(cJSON_GetArraySize(reread) == 2);
     cJSON_Delete(reread);
 }
@@ -446,7 +456,7 @@ static void test_next_game_number_and_key_exists(void) {
 }
 
 int main(void) {
-    test_init_creates_dirs_and_seeds_empty_arrays();
+    test_init_creates_dirs_and_seeds_defaults();
     test_init_does_not_clobber_existing_files();
     test_read_json_array_missing_file_returns_empty_array();
     test_read_json_array_invalid_json_returns_empty_array();

@@ -1,11 +1,12 @@
 # Baseball Scorecard App — Design Document
 
-**Current version:** 1.1 — 2026-07-01
+**Current version:** 1.2 — 2026-07-02
 
 ## Revision History
 
 | Version | Date | Changes |
 |---|---|---|
+| 1.2 | 2026-07-02 | `teams.json` is now seeded with all 30 MLB teams (name + city) on first run, instead of an empty array — same "seed if missing" first-run behavior as before, just with real default data. Only applies to fresh `data/` directories; existing `teams.json` files are untouched. Additive/data-only change, no schema impact. |
 | 1.1 | 2026-07-01 | Added `active` boolean to Team and Player. `DELETE` on either now sets `active: false` (soft delete) instead of removing the record, so past games still resolve the team/player's name while new-game and lineup setup can filter to active-only via `?active=true`. Additive change — old records without `active` are simply treated as active. |
 | 1.0 | 2026-06-30 | Initial design: data model (Team/Player/Game/AtBat/Annotation with team-rename and player-trade versioning), C + Mongoose + cJSON server on flat JSON files, REST API, at-bat pitch-by-pitch lifecycle, derived `compute_game_view` (line score, batting order, outs, runs, out-numbering), basepath Annotations with safe/out coloring, and the full scorecard UI (grid, click-to-edit overlay, Runners on base, batting/pitching stats panel). |
 
@@ -49,6 +50,12 @@ Because this is single-user/single-tab, we deliberately avoid multi-threading, l
   "active": true
 }
 ```
+
+**Default data.** `teams.json` is seeded with all 30 MLB teams (`name`/`city` only —
+`id`s `team_001`..`team_030`) the first time the server runs against a fresh `data/`
+directory, the same "seed if missing" behavior `storage_init` already used for an
+empty array. An existing `teams.json` is never touched, so this only affects new
+installs; delete/rename real teams like any other Team record afterward.
 
 **Player**
 ```json

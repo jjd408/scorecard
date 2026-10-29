@@ -24,6 +24,9 @@ wait_for_db() {
 case "$(uname -s)" in
     Linux)
         sudo apt-get install -y -qq xvfb xdotool imagemagick >/dev/null
+        # The package adds itself to the applications menu, which fails without a menu folder. Every desktop
+        # has one; the build machine is a server without a desktop, so make it look like one.
+        sudo mkdir -p /etc/xdg/menus
         sudo apt-get install -y -qq "$ROOT/$(ls target/installers/*.deb | head -1)"
         Xvfb :99 -screen 0 1280x900x24 &
         export DISPLAY=:99

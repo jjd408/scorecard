@@ -1,27 +1,41 @@
 # Builds installers when a version tag is pushed (e.g. git tag v1.0.0 && git push origin v1.0.0) and attaches
 # them to a GitHub release: an .msi for Windows, a .dmg for macOS and a .deb for Linux, each built on its own
-# system by scripts/package.sh. The release stays a draft until every installer is uploaded.
+# system by scripts/package.sh. Each installer is installed and started on its system first (the smoke test);
+# the release stays a draft until every installer has passed and been uploaded.
+# "Run workflow" on the Actions tab builds and tests the installers without making a release.
 name: Release
 
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version number for the test installers
+        default: 1.0.0
 
 permissions:
   contents: write
 
+env:
+  # The tag without its "v", or the version typed in for a manual run.
+  VERSION: ${{ github.ref_type == 'tag' && github.ref_name || inputs.version }}
+
 jobs:
   draft:
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Create the draft release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" --draft --title "Scorecard ${GITHUB_REF_NAME#v}" --notes-file packaging/release-notes.md
+        run: gh release create "$GITHUB_REF_NAME" --draft --title "Scorecard ${VERSION#v}" --notes-file packaging/release-notes.md
 
   installers:
     needs: draft
+    # Also runs when there is no release to draft (a manual run).
+    if: always() && needs.draft.result != 'failure' && needs.draft.result != 'cancelled'
     strategy:
       fail-fast: false
       matrix:
@@ -53,14 +67,30 @@ jobs:
             "$($wix.FullName)\bin" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
           }
       - name: Build the installer
-        run: scripts/package.sh "${GITHUB_REF_NAME#v}"
-      - name: Attach it to the release
+        run: scripts/package.sh "${VERSION#v}"
+      - name: Install and start it (Linux and macOS)
+        if: runner.os != 'Windows'
+        run: scripts/smoke-test.sh
+      - name: Install and start it (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: scripts/smoke-test.ps1
+      - name: Keep the screenshots and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-${{ runner.os }}
+          path: target/smoke
+          if-no-files-found: ignore
+      - name: Attach the installer to the release
+        if: github.ref_type == 'tag'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release upload "$GITHUB_REF_NAME" target/installers/* --clobber
 
   publish:
     needs: installers
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - name: Publish the release

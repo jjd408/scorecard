@@ -128,6 +128,7 @@ final class Help {
             return false;
         }
         window = new JFrame("Scorecard Help");
+        window.setIconImages(AppIcon.images());
         // Usable even while a dialog that asked for help blocks the rest of the app.
         window.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
         window.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);

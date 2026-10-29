@@ -82,6 +82,7 @@ public class ScFrame extends JFrame {
 
     public ScFrame(String title, Database db) {
         super(title);
+        setIconImages(AppIcon.images());
         this.db = db;
         this.appTitle = title;
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

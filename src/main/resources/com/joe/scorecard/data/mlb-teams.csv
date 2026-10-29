@@ -1,0 +1,46 @@
+# The MLB teams added by the Teams dialog's "Add MLB Teams" button.
+# key,name,city,from
+# Rows with the same key are one team's history, oldest first. An empty
+# "from" means the name and city go back to the beginning; a date (YYYY-MM-DD)
+# is when that name and city took effect.
+#
+# American League East
+BAL,Orioles,Baltimore,
+BOS,Red Sox,Boston,
+NYY,Yankees,New York,
+TB,Devil Rays,Tampa Bay,
+TB,Rays,Tampa Bay,2007-11-08
+TOR,Blue Jays,Toronto,
+# American League Central
+CWS,White Sox,Chicago,
+CLE,Indians,Cleveland,
+CLE,Guardians,Cleveland,2021-11-19
+DET,Tigers,Detroit,
+KC,Royals,Kansas City,
+MIN,Twins,Minnesota,
+# American League West
+HOU,Astros,Houston,
+LAA,Angels,Los Angeles,
+ATH,Athletics,Oakland,
+ATH,Athletics,Sacramento,2025-01-01
+SEA,Mariners,Seattle,
+TEX,Rangers,Texas,
+# National League East
+ATL,Braves,Atlanta,
+MIA,Marlins,Florida,
+MIA,Marlins,Miami,2011-11-11
+NYM,Mets,New York,
+PHI,Phillies,Philadelphia,
+WSH,Nationals,Washington,
+# National League Central
+CHC,Cubs,Chicago,
+CIN,Reds,Cincinnati,
+MIL,Brewers,Milwaukee,
+PIT,Pirates,Pittsburgh,
+STL,Cardinals,St. Louis,
+# National League West
+ARI,Diamondbacks,Arizona,
+COL,Rockies,Colorado,
+LAD,Dodgers,Los Angeles,
+SD,Padres,San Diego,
+SF,Giants,San Francisco,

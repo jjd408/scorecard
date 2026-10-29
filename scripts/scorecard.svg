@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <!-- The Scorecard app icon: a scorecard box with the base diamond, the runner's path in green. -->
+  <rect x="16" y="16" width="224" height="224" rx="28" fill="#ffffff" stroke="#1f6fd0" stroke-width="12"/>
+  <polygon points="128,206 206,128 128,50 50,128" fill="none" stroke="#3a3f45" stroke-width="8" stroke-linejoin="round"/>
+  <polyline points="128,206 206,128 128,50" fill="none" stroke="#1e8e3e" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+  <rect x="194" y="116" width="24" height="24" transform="rotate(45 206 128)" fill="#1e8e3e"/>
+  <rect x="116" y="38" width="24" height="24" transform="rotate(45 128 50)" fill="#1e8e3e"/>
+  <rect x="38" y="116" width="24" height="24" transform="rotate(45 50 128)" fill="#ffffff" stroke="#3a3f45" stroke-width="6"/>
+  <polygon points="114,196 142,196 142,210 128,224 114,210" fill="#3a3f45"/>
+</svg>

@@ -1,0 +1,37 @@
+# The scoring abbreviations added by the Abbrevs dialog's "Add Standard Abbrevs" button.
+# abbrev,description  (everything after the first comma is the description)
+#
+# Hits
+1B,Single
+2B,Double
+3B,Triple
+HR,Home run
+# Reaching base without a hit
+BB,Walk
+IBB,Intentional walk
+HBP,Hit by pitch
+E,Error
+FC,Fielder's choice
+CI,Catcher's interference
+# Outs
+K,Strikeout swinging
+KL,Strikeout looking
+G,Groundout
+F,Flyout
+L,Lineout
+P,Popout
+U,Unassisted out
+FO,Force out
+IF,Infield fly
+SAC,Sacrifice bunt
+SF,Sacrifice fly
+DP,Double play
+TP,Triple play
+# Baserunning
+SB,Stolen base
+CS,Caught stealing
+PO,Pickoff
+WP,Wild pitch
+PB,Passed ball
+BK,Balk
+DI,Defensive indifference

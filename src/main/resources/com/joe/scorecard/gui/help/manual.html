@@ -1,0 +1,306 @@
+<html>
+<head>
+<title>Scorecard Help</title>
+<!-- Shown in a Swing JEditorPane, which reads HTML 3.2 and a little CSS. Each section's <a name> is a
+     Help.Topic anchor; HelpTest checks they all exist. -->
+<style type="text/css">
+body { font-family: sans-serif; font-size: 12pt; margin: 12px; }
+h1 { font-size: 20pt; }
+h2 { font-size: 16pt; margin-top: 18px; }
+h3 { font-size: 13pt; margin-top: 12px; }
+th { text-align: left; background-color: #e8ecf0; }
+code { font-family: monospace; }
+.note { color: #555555; }
+</style>
+</head>
+<body>
+
+<a name="contents"></a>
+<h1>Scorecard Help</h1>
+
+<p>Scorecard keeps a baseball scorecard at-bat by at-bat. It draws each at-bat like a box on a paper card,
+keeps the score, and works out batting and pitching stats as you go.</p>
+
+<p class="note">Every window has a <b>Help</b> button that opens this manual at the part about that window.
+<b>F1</b> does the same.</p>
+
+<p><b>Contents</b></p>
+<ul>
+<li><a href="#getting-started">Getting started</a></li>
+<li><a href="#main-window">The main window</a></li>
+<li><a href="#setting-up">Setting up</a>: <a href="#teams">Teams</a>, <a href="#players">Players</a>,
+  <a href="#abbrevs">Abbrevs</a></li>
+<li><a href="#games">Games</a></li>
+<li><a href="#scoring">Scoring at-bats</a></li>
+<li><a href="#plays">Recording plays</a></li>
+<li><a href="#stats">Stats and the scoreline</a></li>
+<li><a href="#reference">Quick reference and troubleshooting</a></li>
+</ul>
+
+<a name="getting-started"></a>
+<h2>Getting started</h2>
+<ul>
+<li><b>Start it:</b> double-click <b>Scorecard</b> on the desktop, or pick it from the Applications menu
+  (Accessories).</li>
+<li><b>Your data:</b> everything is saved as you go, in <code>~/.scorecard/scorecard.db</code>. There is no Save
+  button. Back up that file to keep a copy of your games.</li>
+<li><b>First run:</b> add teams and players, then create a game (see <a href="#setting-up">Setting up</a> and
+  <a href="#games">Games</a>). After that, the app reopens the last game you had open each time it starts.</li>
+<li><b>After changing the code:</b> run <code>mvn package</code> in <code>~/projects/scorecard</code>, so the
+  desktop button picks up the new version.</li>
+</ul>
+
+<a name="main-window"></a>
+<h2>The main window</h2>
+<p>The window has four parts: the buttons and scoreline along the top, a grid of at-bats for each team, and the
+stats underneath.</p>
+<p><img src="main-window.png" width="990" height="750" alt="The main window"></p>
+<ul>
+<li><b>Buttons (top left):</b> Teams, Players, Games and Abbrevs open the lists you set up the app with. Help
+  opens this manual.</li>
+<li><b>Scoreline (top right):</b> each team's runs (R), hits (H) and errors (E), with the away team first.</li>
+<li><b>Team tabs:</b> one grid for the home team and one for the away team. The title bar names the open
+  game.</li>
+<li><b>The grid:</b> 9 rows, one per batting-order spot, and a column per time through the order. Each cell is
+  one at-bat. A new column appears whenever every column has an at-bat in it.</li>
+<li><b>Stats (bottom):</b> batting and pitching tables for the team on the selected tab. The stats tabs and the
+  grid tabs switch together.</li>
+<li><b>Divider:</b> drag the bar between the grid and the stats to give either more room.</li>
+</ul>
+
+<a name="setting-up"></a>
+<h2>Setting up</h2>
+<p>Set up teams, players and scoring abbreviations once; every game uses them. Each list has <b>New</b>,
+<b>Delete</b>, <b>Edit</b> and <b>Close</b> buttons, and double-clicking a row edits it.</p>
+
+<a name="teams"></a>
+<h3>Teams</h3>
+<ul>
+<li><b>Add MLB Teams</b> adds all 30 Major League teams in one step, skipping any already there.</li>
+<li><b>New</b> asks for a name and city.</li>
+<li><b>Edit</b> asks whether you are correcting a mistake or recording a real change, such as a move to a new
+  city. <b>Correct a mistake</b> changes the team on every date. <b>Change effective</b> keeps the old name and
+  city for games before that date, so old games still show the team as it was.</li>
+</ul>
+
+<a name="players"></a>
+<h3>Players</h3>
+<ul>
+<li><b>New</b> asks for the player's name, uniform number, team, and the date they joined.</li>
+<li><b>Edit</b> changes a player's team or number from a date you choose, such as a trade. Earlier games keep
+  the old team and number.</li>
+<li><b>Delete</b> removes a player as of a date. They still appear in games played before it; nothing is
+  erased.</li>
+<li>You can also add a player while scoring: the <b>Add</b> button in the batter and pitcher picker makes a new
+  player for that team.</li>
+</ul>
+
+<a name="abbrevs"></a>
+<h3>Abbrevs</h3>
+<p>Abbreviations are the codes you score plays with, such as 1B, K or E.</p>
+<ul>
+<li><b>Add Standard Abbrevs</b> adds the usual set: hits (1B, 2B, 3B, HR), reaching base (BB, IBB, HBP, E, FC,
+  CI), outs (K, KL, G, F, L, P, U, FO, IF, SAC, SF, DP, TP) and baserunning (SB, CS, PO, WP, PB, BK, DI).</li>
+<li><b>New</b> adds your own, with a description.</li>
+<li>The stats rely on the standard codes: hits are 1B, 2B, 3B and HR; walks BB and IBB; strikeouts K and KL;
+  stolen bases SB; errors E. A play scored with another code still counts as a plate appearance, but not as a
+  hit, walk or strikeout.</li>
+</ul>
+
+<a name="games"></a>
+<h2>Games</h2>
+<p>Click <b>Games</b> to list every game, newest first, with its date, game number, away team and home team.</p>
+<ul>
+<li><b>New</b> asks for the date, the away team, the home team and the game number. Type dates as YYYY-MM-DD,
+  for example 2026-07-04. Use game number 2 for the second game of a doubleheader. A new game opens straight
+  away.</li>
+<li><b>Open</b> opens the selected game in the main window. The title bar then shows it, for example
+  "Scorecard &ndash; Oakland Athletics at San Francisco Giants, 2024-08-17".</li>
+<li><b>Edit</b> changes a game's details. Once a game has at-bats, only its date and game number can
+  change.</li>
+<li><b>Delete</b> removes a game and everything scored in it.</li>
+</ul>
+<p>The team lists show each team's name and city as of the game's date. The app remembers the open game and
+reopens it the next time it starts.</p>
+
+<a name="scoring"></a>
+<h2>Scoring at-bats</h2>
+<p>Every label in a cell is a button: left-click to pick or add one, right-click to take one away. The pointer
+turns into a hand over anything you can click.</p>
+
+<h3>Starting an at-bat</h3>
+<p>An empty cell is gray and lists only its row, column and "Active no". Click <b>Active</b> to start an at-bat
+there. The cell turns black and lists the batter, pitcher and count.</p>
+<p>A new at-bat fills itself in:</p>
+<ul>
+<li><b>Inning and order</b> start as the cell's column and row. Change them when a team bats around, so the
+  extra at-bats in the next column still count for the right inning.</li>
+<li><b>Batter</b> is the last batter in the same batting-order spot. Pick the lineup once in the first inning
+  and it carries through the game. A substitute you pick carries forward in that spot.</li>
+<li><b>Pitcher</b> is the pitcher from the team's previous at-bat. After a pitching change, pick the new
+  pitcher once and the next at-bats follow.</li>
+</ul>
+<p>Autofill only fills a blank batter or pitcher; it never replaces someone you picked. In the first inning
+there is nothing to copy, so pick them yourself.</p>
+
+<h3>The cell's buttons</h3>
+<table border="1" cellspacing="0" cellpadding="4">
+<tr><th>Label</th><th>Left-click</th><th>Right-click</th></tr>
+<tr><td>Batter</td><td>Pick the batter</td><td>&mdash;</td></tr>
+<tr><td>Pitcher</td><td>Pick the pitcher</td><td>&mdash;</td></tr>
+<tr><td>Pitches</td><td>Add a pitch (up to 99)</td><td>Take one away</td></tr>
+<tr><td>Balls</td><td>Add a ball (up to 4); also adds a pitch</td><td>Take one away, and a pitch</td></tr>
+<tr><td>Strikes</td><td>Add a strike (up to 3); also adds a pitch</td><td>Take one away, and a pitch</td></tr>
+<tr><td>Inning</td><td>Next inning</td><td>Previous inning</td></tr>
+<tr><td>Order</td><td>Next batting-order spot (up to 9)</td><td>Previous spot</td></tr>
+<tr><td>RBIs</td><td>Add a run batted in (up to 4)</td><td>Take one away</td></tr>
+<tr><td>Active</td><td>Turn the at-bat on or off</td><td>&mdash;</td></tr>
+</table>
+<p>Turning an at-bat off greys it out and leaves it out of the stats and the scoreline, but keeps what you
+entered. Turn it back on to restore it.</p>
+
+<a name="picking-players"></a>
+<h3>Picking the batter and pitcher</h3>
+<p>Clicking <b>Batter</b> or <b>Pitcher</b> opens a list of the team's players as of the game date. Double-click
+a name, or select it and click <b>OK</b>. <b>Add</b> makes a new player for the team, even when it has none
+yet. <b>Cancel</b> leaves the at-bat as it was.</p>
+
+<h3>The selected at-bat</h3>
+<p>The last at-bat you clicked is highlighted with a pale yellow background and a blue border, so you can keep
+your place. It stays highlighted when dialogs open and close, until you click another cell or open a different
+game.</p>
+
+<a name="plays"></a>
+<h2>Recording plays</h2>
+<p>Click the diamond of an active at-bat to record what happened. The first play is the batter's own result;
+any later plays move the batter around the bases as a runner.</p>
+<ul>
+<li><b>No plays yet:</b> the New Play form opens straight away, with the pitches, balls and strikes copied from
+  the at-bat.</li>
+<li><b>Plays already entered:</b> the Plays list opens instead. <b>New</b> adds the next play, starting at the
+  base after the furthest one reached. <b>Edit</b> (or double-click) changes one; <b>Delete</b> removes
+  one.</li>
+</ul>
+<p><img src="plays-list.png" width="670" height="263" alt="The Plays list"></p>
+
+<a name="play-form"></a>
+<h3>The play form</h3>
+<p><img src="play-form.png" width="372" height="415" alt="The New Play form"></p>
+<table border="1" cellspacing="0" cellpadding="4">
+<tr><th>Field</th><th>What to enter</th></tr>
+<tr><td>Play</td><td>The abbreviation, such as 1B, K or SB. The list shows each with its description.</td></tr>
+<tr><td>Pitches, Balls, Strikes</td><td>The count when the play happened.</td></tr>
+<tr><td>Played to</td><td>The fielder the ball went to, by scoring number: 1 pitcher, 2 catcher, 3 first base,
+  4 second base, 5 third base, 6 shortstop, 7 left field, 8 center field, 9 right field.</td></tr>
+<tr><td>Base</td><td>The base reached safely: None, First, Second, Third or Home. For an out, the base the runner
+  was out at.</td></tr>
+<tr><td>Out</td><td>Which out of the inning it made (1, 2 or 3), or None.</td></tr>
+<tr><td>By batter</td><td>For a runner, the batter whose play moved them up. The list shows each batting-order
+  spot with that player's name.</td></tr>
+<tr><td>Comment</td><td>Anything else worth remembering.</td></tr>
+</table>
+<p>Example: Batter 1 singles to center, then scores on Batter 3's double. Enter two plays on Batter 1's at-bat:
+Play 1B, Played to 8, Base First; then Base Home, By batter 3.</p>
+
+<h3>How plays are drawn</h3>
+<ul>
+<li><b>Safe:</b> each base path run is a green line, and each base reached is filled green. Reaching home fills
+  home plate.</li>
+<li><b>Out:</b> a red line runs halfway toward the base, with the out's number circled in red beside it. Plays
+  after an out are not drawn.</li>
+<li><b>Labels:</b> each play is written inside the diamond beside its base path, as the abbreviation and fielder
+  number with a space between, such as "1B 8" or "E 6", then the By batter spot. A play that reaches no base,
+  like a strikeout, is written in the middle.</li>
+</ul>
+
+<h3>The plays tooltip</h3>
+<p>Rest the mouse on a diamond to see its plays listed in a small table: number, play with description, base,
+out, fielder, count, By batter and comment. Columns with nothing in them are left out. The tooltip stays until
+you move the mouse off the diamond. An at-bat with no plays says "No plays yet. Click to add one."</p>
+
+<a name="stats"></a>
+<h2>Stats and the scoreline</h2>
+<p>The stats and scoreline update as you score, counting only active at-bats. Each team's tab shows its batters
+and the pitchers who faced the other team, each with a Total row. Rest the mouse on a column heading to see what
+it means.</p>
+
+<h3>Batting</h3>
+<p>Batters are listed in batting order; one who hasn't been picked yet shows as "(not picked)".</p>
+<table border="1" cellspacing="0" cellpadding="4">
+<tr><th>Column</th><th>Meaning</th><th>Counted from</th></tr>
+<tr><td>PA</td><td>Plate appearances</td><td>Every active at-bat</td></tr>
+<tr><td>AB</td><td>At-bats</td><td>Plate appearances except BB, IBB, HBP, SAC, SF and CI</td></tr>
+<tr><td>R</td><td>Runs scored</td><td>The batter reached home</td></tr>
+<tr><td>H</td><td>Hits</td><td>First play 1B, 2B, 3B or HR</td></tr>
+<tr><td>2B, 3B, HR</td><td>Doubles, triples, home runs</td><td>First play 2B, 3B or HR</td></tr>
+<tr><td>RBI</td><td>Runs batted in</td><td>The at-bat's RBIs count</td></tr>
+<tr><td>BB</td><td>Walks</td><td>First play BB or IBB</td></tr>
+<tr><td>SO</td><td>Strikeouts</td><td>First play K or KL</td></tr>
+<tr><td>SB</td><td>Stolen bases</td><td>Each SB play</td></tr>
+</table>
+
+<h3>Pitching</h3>
+<p>Pitchers are listed in the order they appeared.</p>
+<table border="1" cellspacing="0" cellpadding="4">
+<tr><th>Column</th><th>Meaning</th><th>Counted from</th></tr>
+<tr><td>IP</td><td>Innings pitched (.1 and .2 are thirds)</td><td>Batters put out</td></tr>
+<tr><td>BF</td><td>Batters faced</td><td>Every active at-bat</td></tr>
+<tr><td>H, BB, SO, HR</td><td>Hits, walks, strikeouts, home runs allowed</td><td>As for batting</td></tr>
+<tr><td>R</td><td>Runs allowed</td><td>Batters faced who later scored</td></tr>
+<tr><td>NP</td><td>Number of pitches</td><td>The at-bat's pitch count</td></tr>
+</table>
+<p>A pitcher is charged with every batter they faced, including runs those batters score later off another
+pitcher.</p>
+
+<h3>The scoreline</h3>
+<p>The top-right corner shows R, H and E for each team, away first, as in a box score. Runs and hits match the
+batting Totals. Errors count every play scored E against the team in the field, both reaching base on an error
+and moving up on one later.</p>
+
+<a name="reference"></a>
+<h2>Quick reference and troubleshooting</h2>
+
+<h3>Mouse and keys</h3>
+<table border="1" cellspacing="0" cellpadding="4">
+<tr><th>To</th><th>Do this</th></tr>
+<tr><td>Start or stop an at-bat</td><td>Left-click <b>Active</b> in its cell</td></tr>
+<tr><td>Pick the batter or pitcher</td><td>Left-click <b>Batter</b> or <b>Pitcher</b></td></tr>
+<tr><td>Add a pitch, ball, strike, inning, spot or RBI</td><td>Left-click its label</td></tr>
+<tr><td>Take one away</td><td>Right-click its label</td></tr>
+<tr><td>Record or see the plays</td><td>Left-click the diamond</td></tr>
+<tr><td>Read the plays without opening them</td><td>Rest the mouse on the diamond</td></tr>
+<tr><td>Edit a row in any list</td><td>Double-click it</td></tr>
+<tr><td>Open help for the current window</td><td>Click <b>Help</b>, or press <b>F1</b></td></tr>
+</table>
+
+<h3>Scoring a half-inning, step by step</h3>
+<ol>
+<li>Click the team's tab (the team at bat).</li>
+<li>Click <b>Active</b> in the next cell down the column. The batter and pitcher fill in.</li>
+<li>Click <b>Balls</b> and <b>Strikes</b> as pitches are thrown.</li>
+<li>When the at-bat ends, click the diamond and enter the batter's result.</li>
+<li>When a runner moves up later, click their diamond again and add a play with the new base and
+  <b>By batter</b>.</li>
+<li>Set <b>RBIs</b> on the at-bat of the batter who drove in runs.</li>
+</ol>
+
+<h3>Troubleshooting</h3>
+<ul>
+<li><b>Nothing happens when I click a cell:</b> no game is open. Click <b>Games</b>, then open or create
+  one.</li>
+<li><b>The batter didn't fill in:</b> nobody has batted in that spot earlier in the game, or the spot's earlier
+  at-bat has no batter picked. Pick the batter once.</li>
+<li><b>A player is missing from the picker:</b> the picker shows players on the team as of the game date. Check
+  their team and the date they joined under <b>Players</b>, or use <b>Add</b>.</li>
+<li><b>A stat looks wrong:</b> check the first play's abbreviation. Stats only recognize the standard codes
+  listed under <a href="#abbrevs">Abbrevs</a>, and turned-off at-bats are not counted.</li>
+<li><b>The desktop button runs an old version:</b> run <code>mvn package</code> in
+  <code>~/projects/scorecard</code>.</li>
+<li><b>Moving to another computer:</b> copy <code>~/.scorecard/scorecard.db</code>; it holds all teams, players
+  and games.</li>
+</ul>
+
+<p><a href="#contents">Back to the top</a></p>
+
+</body>
+</html>

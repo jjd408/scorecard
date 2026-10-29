@@ -15,6 +15,14 @@ pitching stats as you go.
 - Runs, hits and errors for each team, plus batting and pitching stats.
 - A built-in manual: every window has a Help button, and F1 opens the section for that window.
 
+## Download
+
+Installers for Windows (.msi), macOS (.dmg) and Linux (.deb) are on the
+[Releases](https://github.com/jjd408/scorecard/releases) page. Each includes its own Java.
+
+To make a release, push a version tag: `git tag v1.1.0 && git push origin v1.1.0`. The Release workflow builds
+the installers on each system with `scripts/package.sh` and attaches them.
+
 ## Building and running
 
 Needs Java 21 and Maven.
